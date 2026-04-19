@@ -3,7 +3,7 @@
 
 Masari (Arabic for "My Path") is a premium, privacy-first web application designed to help professionals build stunning, print-ready resumes directly in the browser. It features a modern Glassmorphism UI, a real-time responsive preview, and a robust PDF engine that produces high-quality vector documents.
 
-### 🌐 [Live Demo: Start Building Now](https://sultanalfaifi.github.io/Masari/)
+### 🌐 [Live Demo: Start Building Now](https://AS-QARI.github.io/Masari-OREZ/)
 
 [ARABIC_VERSION_LINK](#مساري--masari-)
 
@@ -42,13 +42,13 @@ Masari (Arabic for "My Path") is a premium, privacy-first web application design
 ### 🚀 Quick Start
 
 The fastest way to use Masari is via the live web application:
-**👉 [https://sultanalfaifi.github.io/Masari/](https://sultanalfaifi.github.io/Masari/)**
+**👉 [https://AS-QARI.github.io/Masari-OREZ/](https://AS-QARI.github.io/Masari-OREZ/)**
 
 #### Local Setup (Development)
 If you prefer to run it locally or contribute:
 1. Clone the repository:
    ```bash
-   git clone https://github.com/SultanAlfaifi/Masari.git
+   git clone https://github.com/AS-QARI/Masari-OREZ.git
    ```
 2. Open `index.html` in any modern browser.
 
@@ -69,7 +69,7 @@ If you want to modify fonts or add new assets to the PDF virtual filesystem:
 
 **مساري** هو تطبيق ويب متطور مصمم لمساعدة المحترفين في بناء سير ذاتية مذهلة وجاهزة للطباعة مباشرة من المتصفح. يتميز بواجهة "Glassmorphism" عصرية، معينة حية متجاوبة، ومحرك PDF قوي ينتج مستندات عالية الجودة.
 
-### 🌐 [رابط التجربة المباشرة: ابدأ الآن](https://sultanalfaifi.github.io/Masari/)
+### 🌐 [رابط التجربة المباشرة: ابدأ الآن](https://AS-QARI.github.io/Masari-OREZ/)
 
 ### ✨ المميزات
 
@@ -104,13 +104,13 @@ If you want to modify fonts or add new assets to the PDF virtual filesystem:
 ### 🚀 البدء في الاستخدام
 
 أسرع طريقة لاستخدام مساري هي عبر الرابط المباشر:
-**👉 [https://sultanalfaifi.github.io/Masari/](https://sultanalfaifi.github.io/Masari/)**
+**👉 [https://AS-QARI.github.io/Masari-OREZ/](https://AS-QARI.github.io/Masari-OREZ/)**
 
 #### التشغيل المحلي (للمطورين)
 إذا كنت ترغب بفتح المشروع على جهازك الخاص:
 1. قم بتحميل المستودع:
    ```bash
-   git clone https://github.com/SultanAlfaifi/Masari.git
+   git clone https://github.com/AS-QARI/Masari-OREZ.git
    ```
 2. افتح ملف `index.html` في أي متصفح حديث.
 
