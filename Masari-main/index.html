@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://unpkg.com; connect-src 'self' https://cdnjs.cloudflare.com https://unpkg.com;">
+    <title>مساري | صانع السيرة الذاتية الاحترافي</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://unpkg.com/lucide@0.475.0" crossorigin="anonymous"></script>
+    <!-- PDFMake library for robust, data-driven vector PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="vfs_fonts.js"></script>
+    <!-- SortableJS library for Drag and Drop -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="top-announcement">
+        <span style="color: #94a3b8;">Powered by</span>
+        <span style="
+            font-family: 'Pacifico', 'Dancing Script', 'Brush Script MT', cursive;
+            font-size: 1.15rem;
+            font-weight: 400;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin: 0 4px;
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+        ">orez</span>
+    </div>
+    <header class="header">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-file-invoice"></i></div>
+            <h1 class="brand-title">مساري</h1>
+        </div>
+        <div class="header-actions">
+            <!-- Action buttons always shown, text hidden on mobile -->
+            <button class="btn btn-ghost" onclick="toggleMobileModal()" id="preview-btn-mobile">
+                <i data-lucide="eye" style="width:16px;height:16px;"></i> <span class="action-text">المعاينة</span>
+            </button>
+            <button class="btn btn-ghost" onclick="confirmClearDataModal()"
+                style="color: #ef4444; background: rgba(239, 68, 68, 0.1);">
+                <i data-lucide="trash-2" style="width:16px;height:16px;"></i> <span class="action-text">إفراغ
+                    الحقول</span>
+            </button>
+            <button class="btn btn-ghost" onclick="resetData()">
+                <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> <span class="action-text">ملء
+                    تجريبي</span>
+            </button>
+            <div class="download-dropdown" id="download-dropdown-wrapper">
+                <button class="btn btn-primary" id="download-btn-desktop" onclick="downloadPDF(event)">
+                    <i data-lucide="download" style="width:16px;height:16px;"></i>
+                    <span class="action-text">تحميل PDF</span>
+                </button>
+                <button class="btn btn-primary download-arrow-btn" onclick="toggleDownloadMenu(event)" title="صيغ تحميل أخرى">
+                    <i data-lucide="chevron-down" style="width:14px;height:14px;"></i>
+                </button>
+                <div class="download-menu" id="download-menu">
+                    <button onclick="downloadPDF(event); toggleDownloadMenu()">
+                        <i class="fas fa-file-pdf" style="color:#ef4444;"></i> تحميل PDF
+                    </button>
+                    <button onclick="downloadAsImage(); toggleDownloadMenu()">
+                        <i class="fas fa-image" style="color:#8b5cf6;"></i> تحميل كصورة (PNG)
+                    </button>
+                    <button onclick="downloadAsWord(); toggleDownloadMenu()">
+                        <i class="fas fa-file-word" style="color:#2563eb;"></i> تحميل Word (.docx) <span style="font-size:0.7rem; opacity:0.6;">(تجريبي)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Native Bottom Tab Bar on Mobile / Sidebar on Desktop -->
+        <nav class="sidebar" id="sidebar-nav">
+            <div class="nav-item active no-drag" onclick="showSection(1)" id="nav-sec-1">
+                <i data-lucide="user"></i> <span class="nav-text">الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showSection(9)" id="nav-sec-9" data-section="summary">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="file-text"></i> <span class="nav-text">نبذة</span>
+            </div>
+            <div class="nav-item" onclick="showSection(2)" id="nav-sec-2" data-section="skills">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="terminal"></i> <span class="nav-text">المهارات</span>
+            </div>
+            <div class="nav-item" onclick="showSection(3)" id="nav-sec-3" data-section="projects">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="layout"></i> <span class="nav-text">المشاريع</span>
+            </div>
+            <div class="nav-item" onclick="showSection(4)" id="nav-sec-4" data-section="experience">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="briefcase"></i> <span class="nav-text">الخبرات</span>
+            </div>
+            <div class="nav-item" onclick="showSection(5)" id="nav-sec-5" data-section="education">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="graduation-cap"></i> <span class="nav-text">التعليم</span>
+            </div>
+            <div class="nav-item" onclick="showSection(6)" id="nav-sec-6" data-section="certifications">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="award"></i> <span class="nav-text">الشهادات</span>
+            </div>
+            <div class="nav-item" onclick="showSection(7)" id="nav-sec-7" data-section="awards">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="star"></i> <span class="nav-text">الجوائز</span>
+            </div>
+            <div class="nav-item" onclick="showSection(8)" id="nav-sec-8" data-section="volunteering">
+                <i data-lucide="grip-vertical" class="drag-handle"></i>
+                <i data-lucide="heart-handshake"></i> <span class="nav-text">التطوع</span>
+            </div>
+
+        </nav>
+
+        <main class="editor" id="main-editor">
+            <!-- SECTION 1: Personal -->
+            <div class="section-wrapper active" id="sec-1">
+                <div class="elegant-warning">
+                    <div class="warning-icon">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <div class="warning-content">
+                        <strong>تنبيه:</strong> نعتذر منك، الموقع حالياً <u>لا يدعم اللغة العربية</u> في تصميم السيرة
+                        الذاتية الـ PDF. يُرجى إدخال بياناتك باللغة الإنجليزية فقط للحصول على أفضل نتيجة.
+                    </div>
+                </div>
+                <div class="section-header">
+                    <h2>البيانات الشخصية</h2>
+                    <p>معلومات الاتصال الأساسية التي تمنح أصحاب العمل وسيلة للوصول إليك بسرعة.</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label class="form-label">الاسم الكامل</label>
+                        <input type="text" class="form-input" id="in-name" style="direction: ltr;"
+                            placeholder="مثال: Sultan AlFifi" oninput="saveAndRefresh()">
+                    </div>
+                    <div class="form-group col-span-2">
+                        <label class="form-label">مميز (Highlights) - اختياري</label>
+                        <input type="text" class="form-input" id="in-highlights" style="direction: ltr;"
+                            placeholder="مثال: KAUST AI Program | McKinsey Forward Fellow | SCE Member"
+                            oninput="saveAndRefresh()">
+                    </div>
+                    <div class="form-group" id="fg-email" style="order: 0;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>البريد الإلكتروني</span>
+                            <div style="display:flex; gap: 2px;">
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('email', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('email', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                            </div>
+                        </label>
+                        <input type="email" class="form-input" id="in-email" style="direction: ltr;"
+                            placeholder="مثال: sultan@example.com" oninput="saveAndRefresh()">
+                    </div>
+                    <div class="form-group" id="fg-phone" style="order: 1;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>رقم الجوال</span>
+                            <div style="display:flex; gap: 2px;">
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('phone', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('phone', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                            </div>
+                        </label>
+                        <input type="text" class="form-input" id="in-phone" style="direction: ltr;"
+                            placeholder="مثال: +966 50 399 0106" oninput="saveAndRefresh()"
+                            onblur="formatPhoneField(this)">
+                    </div>
+                    <div class="form-group" id="fg-social" style="order: 2; position: relative;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>لينكد إن <span style="font-size: 0.7rem; color: var(--accent); font-weight: 500;">(نتعرف على الرابط)</span></span>
+                            <div style="display:flex; gap: 4px; align-items:center;">
+                                <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:0.75rem; font-weight:500; color:var(--text-muted);">
+                                    <input type="checkbox" id="in-socialShowFull"
+                                        onchange="toggleSocialDisplay(this.checked)"
+                                        style="width:14px; height:14px; accent-color: var(--accent);">
+                                    عرض رابط كامل
+                                </label>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('social', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('social', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                            </div>
+                        </label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="text" class="form-input" id="in-social"
+                                style="direction: ltr; padding-left: 38px;" placeholder="https://linkedin.com/in/..."
+                                oninput="handleSocialInput(this.value)">
+                            <div id="social-icon-box"
+                                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.25rem; display: flex; align-items: center; justify-content: center; width: 20px;">
+                                <i class="fa-brands fa-linkedin color-linkedin" style="opacity:1;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="fg-github" style="order: 3; position: relative;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>جيتهاب (GitHub) <span style="font-size: 0.7rem; color: var(--accent); font-weight: 500;">(رابط أو يوزر)</span></span>
+                            <div style="display:flex; gap: 2px;">
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('github', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('github', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                            </div>
+                        </label>
+                        <div style="position: relative; display: flex; align-items: center;">
+                            <input type="text" class="form-input" id="in-github"
+                                style="direction: ltr; padding-left: 38px;" placeholder="Username or Link"
+                                oninput="handleGithubInput(this.value)">
+                            <div id="github-icon-box"
+                                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 1.25rem; display: flex; align-items: center; justify-content: center; width: 20px;">
+                                <i class="fa-brands fa-github color-github" style="opacity:1;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="fg-location" style="order: 4;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>المدينة، الدولة</span>
+                            <div style="display:flex; gap: 2px;">
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('location', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                                <button type="button" class="btn-order-contact" onclick="moveContactItem('location', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                            </div>
+                        </label>
+                        <input type="text" class="form-input" id="in-location" style="direction: ltr;"
+                            placeholder="مثال: Makkah, KSA" oninput="saveAndRefresh()">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 3rem; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem;">إعدادات المظهر والقوالب</h2>
+                    <p>اختر القالب وقم بتخصيص الخطوط والمسافات لتناسب احتياجاتك.</p>
+                </div>
+                <div class="form-grid" style="margin-bottom: 2rem;">
+                    <div class="form-group col-span-2">
+                        <label class="form-label">اختر القالب (CV Template)</label>
+                        <select id="sel-template" class="form-input" onchange="changeTemplate(this.value)">
+                            <option value="default">القالب الافتراضي المودرن (Default)</option>
+                            <option value="academic">القالب الأكاديمي الكلاسيكي (Academic)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem;">إعدادات الخطوط (التنسيق)</h2>
+                    <p>تحكم بأحجام العناوين والنصوص للسيرة الذاتية.</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label class="form-label">نوع الخط (Font Family)</label>
+                        <select class="form-input" id="in-fontFamily" onchange="changeFontFamily(this.value)">
+                            <option value="Inter">الافتراضي (Inter)</option>
+                            <option value="Calibri">كاليبري (Calibri)</option>
+                            <option value="LMRoman">لاتيني كلاسيكي (Latin Modern / Computer Modern)</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-span-2">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-isBold" onchange="changeFontBold(this.checked)">
+                            <span>جعل جميع النصوص بخط عريض (Bold)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم خط الاسم</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeName', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeName">26</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeName', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم العناوين الأساسية</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeTitle', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeTitle">12.5</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeTitle', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم الفقرات الرئيسية</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeRole', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeRole">11</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeRole', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم التواريخ</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeDate', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeDate">9.5</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeDate', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم وصف الفقرات (التفاصيل)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeBody', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeBody">9.5</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeBody', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">حجم خط التواصل (Contact)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeContact', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-fontSizeContact">9.5</span>
+                            <button type="button" class="btn-font-control" onclick="changeFontSize('fontSizeContact', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 3rem; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem;">إعدادات الأبعاد والمسافات (Spacing)</h2>
+                    <p>تحكم بالمسافات بين السطور وأقسام السيرة الذاتية لتنسيق المساحات بحرية.</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group col-span-2">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-inlineEntity" onchange="changeInlineEntity(this.checked)">
+                            <span>دمج المسمى مع الجهة في سطر واحد لتوفير المساحة (مثل: الدور | الجهة)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مسافة أسفل الاسم</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginName', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-marginName">-1</span>
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginName', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مسافة أسفل التواصل</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginContact', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-marginContact">12</span>
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginContact', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">المسافة قبل الأقسام (Section Top Margin)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginTopSection', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-marginTopSection">6</span>
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginTopSection', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مسافة أسفل التفاصيل والإنجازات</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginItem', -0.5)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-marginItem">4</span>
+                            <button type="button" class="btn-font-control" onclick="changeMargin('marginItem', 0.5)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Per-Section Margin Controls -->
+                <div class="section-header" style="margin-top: 2rem; margin-bottom: 1rem;">
+                    <h2 style="font-size: 1.2rem;">تحكم بمسافة كل قسم بشكل منفصل</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">يمكنك رفع أو خفض كل قسم بشكل مستقل (يضاف على المسافة الأساسية أعلاه)</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">نبذة (Summary)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('summary', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-summary">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('summary', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">المهارات (Skills)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('skills', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-skills">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('skills', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">المشاريع (Projects)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('projects', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-projects">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('projects', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الخبرات (Experience)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('experience', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-experience">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('experience', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">التعليم (Education)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('education', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-education">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('education', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الشهادات (Certifications)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('certifications', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-certifications">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('certifications', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الجوائز (Awards)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('awards', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-awards">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('awards', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">التطوع (Volunteering)</label>
+                        <div class="font-controls">
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('volunteering', -1)"><i data-lucide="minus"></i></button>
+                            <span class="font-size-val" id="lbl-secMargin-volunteering">0</span>
+                            <button type="button" class="btn-font-control" onclick="changeSectionMargin('volunteering', 1)"><i data-lucide="plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 9: Summary -->
+            <div class="section-wrapper" id="sec-9">
+                <div class="section-header">
+                    <h2>نبذة (Summary)</h2>
+                    <p>نبذة مختصرة تسلط الضوء على أبرز مهاراتك وأهدافك المهنية.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-summary" placeholder="مثال: SUMMARY" oninput="saveAndRefresh()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نبذة (Summary)</label>
+                    <textarea class="form-input form-textarea" id="in-summary"
+                        style="direction: ltr; min-height: 120px;"
+                        placeholder="مثال: A highly motivated software engineer with 5 years of experience..."
+                        oninput="saveAndRefresh()"></textarea>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Skills -->
+            <div class="section-wrapper" id="sec-2">
+                <div class="section-header">
+                    <h2>المهارات والفئات</h2>
+                    <p>أضف تصنيفات لمهاراتك (لغات برمجة، شهادات، أطر عمل، مهارات ناعمة).</p>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-skills" placeholder="مثال: SKILLS" oninput="saveAndRefresh()">
+                </div>
+
+                <div style="margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <span style="font-size: 0.85rem; color: var(--text-muted); padding-top: 4px;">إضافة سريعة:</span>
+                    <button class="btn-chip" onclick="addSkillSuggestion('Languages')">+ لغات البرمجة</button>
+                    <button class="btn-chip" onclick="addSkillSuggestion('Tools & Frameworks')">+ الإطارات
+                        والأدوات</button>
+                    <button class="btn-chip" onclick="addSkillSuggestion('Soft Skills')">+ المهارات الناعمة</button>
+                </div>
+
+                <div id="skills-list">
+                    <!-- Dynamic Skills Form injected here -->
+                </div>
+
+                <button class="btn-outline" style="margin-top: 1rem;" onclick="addSkillObj()">
+                    <i data-lucide="plus"></i> إضافة فئة مهارات جديدة
+                </button>
+            </div>
+
+            <!-- SECTION 3: Projects -->
+            <div class="section-wrapper" id="sec-3">
+                <div class="section-header">
+                    <h2>المشاريع النوعية</h2>
+                    <p>أبرز التطبيقات والأنظمة التي قمت ببنائها للتأكيد على قدراتك العملية.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-projects" placeholder="مثال: PROJECTS" oninput="saveAndRefresh()">
+                </div>
+                <div id="project-list"></div>
+                <button class="btn-outline" onclick="addProject()">
+                    <i data-lucide="plus"></i> إضافة مشروع جديد
+                </button>
+            </div>
+
+            <!-- SECTION 4: Experience -->
+            <div class="section-wrapper" id="sec-4">
+                <div class="section-header">
+                    <h2>الخبرات المهنية</h2>
+                    <p>استعرض مسيرتك الوظيفية وأهم الإنجازات التي حققتها في كل منصب.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-experience" placeholder="مثال: EXPERIENCE" oninput="saveAndRefresh()">
+                </div>
+                <div id="experience-list"></div>
+                <button class="btn-outline" onclick="addExperience()">
+                    <i data-lucide="plus"></i> إضافة خبرة جديدة
+                </button>
+            </div>
+
+            <!-- SECTION 5: Education -->
+            <div class="section-wrapper" id="sec-5">
+                <div class="section-header">
+                    <h2>المؤهلات التعليمية</h2>
+                    <p>سجلك الأكاديمي، التخصص، وتاريخ التخرج والمؤسسة التعليمية.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-education" placeholder="مثال: EDUCATION" oninput="saveAndRefresh()">
+                </div>
+                <div id="education-list"></div>
+                <button class="btn-outline" onclick="addEducation()">
+                    <i data-lucide="plus"></i> إضافة مؤهل جديد
+                </button>
+            </div>
+
+            <!-- SECTION 6: Certifications -->
+            <div class="section-wrapper" id="sec-6">
+                <div class="section-header">
+                    <h2>الشهادات المهنية</h2>
+                    <p>أضف الشهادات الاحترافية التي حصلت عليها لتثبت تخصصك.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-certifications" placeholder="مثال: CERTIFICATIONS" oninput="saveAndRefresh()">
+                </div>
+                <div id="certification-list"></div>
+                <button class="btn-outline" onclick="addCertification()">
+                    <i data-lucide="plus"></i> إضافة شهادة جديدة
+                </button>
+            </div>
+
+            <!-- SECTION 7: Awards -->
+            <div class="section-wrapper" id="sec-7">
+                <div class="section-header">
+                    <h2>الجوائز والإنجازات</h2>
+                    <p>هل حققت مركزاً متقدماً أو فزت بمسابقة؟ اذكرها هنا لتميز سيرتك.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-awards" placeholder="مثال: AWARDS & HONORS" oninput="saveAndRefresh()">
+                </div>
+                <div id="award-list"></div>
+                <button class="btn-outline" onclick="addAward()">
+                    <i data-lucide="plus"></i> إضافة جائزة جديدة
+                </button>
+            </div>
+
+            <!-- SECTION 8: Volunteering -->
+            <div class="section-wrapper" id="sec-8">
+                <div class="section-header">
+                    <h2>الأعمال التطوعية</h2>
+                    <p>مساهماتك المجتمعية تظهر روح المبادرة والتعاون لديك.</p>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">الاسم المخصص للقسم (اختياري)</label>
+                    <input type="text" class="form-input" id="in-title-volunteering" placeholder="مثال: VOLUNTEERING" oninput="saveAndRefresh()">
+                </div>
+                <div id="volunteering-list"></div>
+                <button class="btn-outline" onclick="addVolunteering()">
+                    <i data-lucide="plus"></i> إضافة عمل تطوعي
+                </button>
+            </div>
+        </main>
+
+        <!-- Desktop Preview -->
+        <aside class="preview-panel" id="desktop-preview-container"></aside>
+    </div>
+
+
+
+    <!-- Reset / Dummy Data Modal -->
+    <div class="custom-modal-overlay" id="resetModal">
+        <div class="custom-modal-box">
+            <h3>تعبئة ببيانات تجريبية؟</h3>
+            <p>هل تريد تعبئة الحقول ببيانات افتراضية للتجربة؟ سيتم مسح أي بيانات كتبتها حالياً، تذكر تحميل نسخة PDF قبل
+                ذلك.</p>
+            <div class="custom-modal-actions">
+                <button class="btn-close-modal" onclick="closeResetModal()">إلغاء</button>
+                <button class="btn-confirm-reset" onclick="confirmReset()">تعبئة الحقول</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All Modal -->
+    <div class="custom-modal-overlay" id="clearModal">
+        <div class="custom-modal-box">
+            <h3 style="color: #ef4444;">حذف جميع البيانات؟</h3>
+            <p>هل أنت متأكد من مسح جميع بيانات السيرة الذاتية لتصبح الحقول فارغة تماماً؟ لا يمكن التراجع عن هذا الإجراء.
+            </p>
+            <div class="custom-modal-actions">
+                <button class="btn-close-modal" onclick="closeClearModal()">إلغاء</button>
+                <button class="btn-danger-confirm" onclick="confirmClearAll()">مسح البيانات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile PDF Modal -->
+    <div class="preview-modal" id="mobilePreviewModal">
+        <div class="modal-header">
+            <button class="btn-close-modal" onclick="toggleMobileModal()">إلغاء</button>
+            <span>المعاينة النهائية</span>
+            <button class="btn-download-modal" onclick="downloadPDF(event)"><i data-lucide="download"
+                    style="width:16px;"></i> تحميل</button>
+        </div>
+        <div class="preview-modal-content" id="mobile-preview-container">
+            <!-- Rendered Here -->
+        </div>
+    </div>
+
+    <!-- HIDDEN TEMPLATE (MASTER - ORDERED EXACTLY AS REQUESTED) -->
+    <div style="display:none;" id="cv-master-template">
+        <div class="a4-wrapper" id="pdf-root" style="position:relative;">
+            <!-- Page 2 overflow indicator -->
+            <div class="page-break-indicator" id="page-break-indicator"></div>
+            <div class="cv-document">
+                <div class="cv-header-center">
+                    <div class="cv-name" id="cv-name"></div>
+                    <div class="cv-highlights" id="cv-highlights"></div>
+                    <div class="cv-contact" id="cv-contact-container"></div>
+                </div>
+
+                <div class="cv-section" id="v-summary" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-summary">SUMMARY</div>
+                        <div id="v-summary-items" style="font-size:9.5pt;margin-bottom:4px;color:#333;"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-skills" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-skills">SKILLS</div>
+                        <div id="v-skills-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-proj" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-projects">PROJECTS</div>
+                        <div id="v-project-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-exp" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-experience">EXPERIENCE</div>
+                        <div id="v-experience-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-edu" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-education">EDUCATION</div>
+                        <div id="v-education-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-cert" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-certifications">CERTIFICATIONS</div>
+                        <div id="v-certification-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-award" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-awards">AWARDS & HONORS</div>
+                        <div id="v-award-items"></div>
+                    </div>
+                </div>
+
+                <div class="cv-section" id="v-vol" style="display:none;">
+                    <div class="section-wrapper-pdf">
+                        <div class="cv-section-title" id="title-volunteering">VOLUNTEERING</div>
+                        <div id="v-volunteering-items"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Picker UI -->
+    <div class="date-picker-modal" id="datePickerModal">
+        <div class="date-picker-content">
+            <div class="dp-header">
+                <h3>تحديد التاريخ</h3>
+                <button class="btn-close-dp" onclick="closeDatePicker()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="dp-tabs">
+                <button class="dp-tab active" id="tab-gregorian" onclick="setCalType('gregorian')">ميلادي</button>
+                <button class="dp-tab" id="tab-hijri" onclick="setCalType('hijri')">هجري</button>
+            </div>
+
+            <div class="dp-body">
+                <div class="dp-section">
+                    <h4>من (Start)</h4>
+                    <div class="dp-row">
+                        <select id="dp-start-month" class="dp-select"></select>
+                        <select id="dp-start-year" class="dp-select"></select>
+                    </div>
+                </div>
+                <div class="dp-section">
+                    <h4>إلى (End)</h4>
+                    <div class="dp-row-labels">
+                        <label><input type="radio" name="dp_end_type" value="range" checked
+                                onchange="toggleEndPicker()"> فترة محددة</label>
+                        <label><input type="radio" name="dp_end_type" value="present" onchange="toggleEndPicker()"> حتى
+                            الآن</label>
+                        <label><input type="radio" name="dp_end_type" value="single" onchange="toggleEndPicker()"> تاريخ
+                            واحد فقط</label>
+                    </div>
+                    <div class="dp-row" id="dp-end-group">
+                        <select id="dp-end-month" class="dp-select"></select>
+                        <select id="dp-end-year" class="dp-select"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem;"
+                    onclick="saveDateSelection()">تأكيد التاريخ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>lucide.createIcons();</script>
+    <div class="security-badge">
+        <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
+        بياناتك تُحفظ محليًا كلياً
+    </div>
+</body>
+
+</html>
