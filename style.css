@@ -319,26 +319,41 @@ select {
     font-size: 1.2rem;
 }
 
-.drag-handle {
-    cursor: grab;
-    opacity: 0.3;
-    transition: opacity 0.2s;
+.section-order-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+[dir="rtl"] .section-order-controls {
+    order: 99;              /* Push to far left in RTL sidebar */
+}
+
+.btn-sec-order {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    padding: 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-sec-order svg, .btn-sec-order i {
     width: 14px;
     height: 14px;
-    margin-right: -4px; /* Slight offset */
 }
 
-[dir="rtl"] .drag-handle {
-    margin-right: 0;
-    margin-left: -4px;
+.btn-sec-order:hover {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--accent);
 }
 
-.nav-item:hover .drag-handle {
-    opacity: 0.7;
-}
-
-.nav-item .drag-handle:active {
-    cursor: grabbing;
+body[data-theme='dark'] .btn-sec-order:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .sortable-ghost {
@@ -1744,4 +1759,113 @@ select {
 @keyframes dropdownFade {
     from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Dark Theme */
+body[data-theme='dark'] {
+    --primary: #f8fafc;
+    --bg-page: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.85);
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: rgba(51, 65, 85, 0.75);
+    --border-hover: #475569;
+}
+body[data-theme='dark'] .sidebar {
+    background: rgba(15, 23, 42, 0.8);
+}
+body[data-theme='dark'] .header {
+    background: rgba(15, 23, 42, 0.9);
+}
+body[data-theme='dark'] .item-card {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(51, 65, 85, 0.8);
+}
+body[data-theme='dark'] .form-input, body[data-theme='dark'] .fake-input {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(51, 65, 85, 0.8);
+    color: var(--text-main);
+}
+body[data-theme='dark'] .form-input:hover, body[data-theme='dark'] .fake-input:hover {
+    border-color: var(--border-hover);
+    background: rgba(30, 41, 59, 0.9);
+}
+body[data-theme='dark'] .nav-item:hover {
+    background: rgba(30, 41, 59, 0.8);
+}
+body[data-theme='dark'] .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+body[data-theme='dark'] .preview-panel {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+body[data-theme='dark'] .font-controls {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: var(--border);
+}
+body[data-theme='dark'] .btn-font-control {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: var(--border);
+    color: var(--text-main);
+}
+body[data-theme='dark'] .btn-font-control:hover {
+    background: rgba(51, 65, 85, 0.9);
+}
+body[data-theme='dark'] .font-size-val {
+    color: var(--text-main);
+}
+body[data-theme='dark'] .btn-reorder,
+body[data-theme='dark'] .btn-chip {
+    background: rgba(30, 41, 59, 0.8);
+    color: var(--text-main);
+    border-color: var(--border);
+}
+body[data-theme='dark'] .btn-reorder:hover,
+body[data-theme='dark'] .btn-chip:hover {
+    background: rgba(51, 65, 85, 0.9);
+    border-color: var(--accent);
+}
+body[data-theme='dark'] .custom-modal-box {
+    background: #1e293b;
+}
+body[data-theme='dark'] .custom-modal-box h3 {
+    color: #f1f5f9;
+}
+body[data-theme='dark'] .custom-modal-box p {
+    color: #94a3b8;
+}
+body[data-theme='dark'] .btn-close-modal {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+body[data-theme='dark'] .download-menu {
+    background: #1e293b;
+    border-color: var(--border);
+}
+body[data-theme='dark'] .download-menu button:hover {
+    background: #334155;
+}
+body[data-theme='dark'] .a4-wrapper {
+    background: white !important;
+}
+body[data-theme='dark'] .cv-document {
+    color: #1a1a1a !important;
+}
+body[data-theme='dark'] .cv-document * {
+    /* Keep CV text readable on white */
+}
+body[data-theme='dark'] .date-picker-content {
+    background: #1e293b;
+}
+body[data-theme='dark'] .dp-header h3 {
+    color: #f1f5f9;
+}
+body[data-theme='dark'] .dp-section h4 {
+    color: #94a3b8;
+}
+body[data-theme='dark'] .dp-select {
+    background: rgba(15, 23, 42, 0.9);
+    color: var(--text-main);
+    border-color: var(--border);
 }

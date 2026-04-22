@@ -18,8 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" crossorigin="anonymous"
         referrerpolicy="no-referrer"></script>
     <script src="vfs_fonts.js"></script>
-    <!-- SortableJS library for Drag and Drop -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    <!-- SortableJS library for Drag and Drop - loaded inline in head for availability -->
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -58,6 +57,9 @@
                 <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> <span class="action-text">ملء
                     تجريبي</span>
             </button>
+            <button class="btn btn-ghost" onclick="toggleDarkMode()" id="btn-dark-mode" style="color: var(--text-main);">
+                <i data-lucide="moon" id="icon-dark-mode" style="width:16px;height:16px;"></i>
+            </button>
             <div class="download-dropdown" id="download-dropdown-wrapper">
                 <button class="btn btn-primary" id="download-btn-desktop" onclick="downloadPDF(event)">
                     <i data-lucide="download" style="width:16px;height:16px;"></i>
@@ -85,55 +87,76 @@
         <!-- Native Bottom Tab Bar on Mobile / Sidebar on Desktop -->
         <nav class="sidebar" id="sidebar-nav">
             <div class="nav-item active no-drag" onclick="showSection(1)" id="nav-sec-1">
-                <i data-lucide="user"></i> <span class="nav-text">الرئيسية</span>
+                <i data-lucide="user"></i> <span class="nav-text" style="flex:1;">الرئيسية</span>
             </div>
             <div class="nav-item" onclick="showSection(9)" id="nav-sec-9" data-section="summary">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="file-text"></i> <span class="nav-text">نبذة</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('summary', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('summary', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="file-text"></i> <span class="nav-text" style="flex:1;">نبذة</span>
             </div>
             <div class="nav-item" onclick="showSection(2)" id="nav-sec-2" data-section="skills">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="terminal"></i> <span class="nav-text">المهارات</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('skills', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('skills', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="terminal"></i> <span class="nav-text" style="flex:1;">المهارات</span>
             </div>
             <div class="nav-item" onclick="showSection(3)" id="nav-sec-3" data-section="projects">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="layout"></i> <span class="nav-text">المشاريع</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('projects', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('projects', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="layout"></i> <span class="nav-text" style="flex:1;">المشاريع</span>
             </div>
             <div class="nav-item" onclick="showSection(4)" id="nav-sec-4" data-section="experience">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="briefcase"></i> <span class="nav-text">الخبرات</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('experience', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('experience', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="briefcase"></i> <span class="nav-text" style="flex:1;">الخبرات</span>
             </div>
             <div class="nav-item" onclick="showSection(5)" id="nav-sec-5" data-section="education">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="graduation-cap"></i> <span class="nav-text">التعليم</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('education', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('education', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="graduation-cap"></i> <span class="nav-text" style="flex:1;">التعليم</span>
             </div>
             <div class="nav-item" onclick="showSection(6)" id="nav-sec-6" data-section="certifications">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="award"></i> <span class="nav-text">الشهادات</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('certifications', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('certifications', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="award"></i> <span class="nav-text" style="flex:1;">الشهادات</span>
             </div>
             <div class="nav-item" onclick="showSection(7)" id="nav-sec-7" data-section="awards">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="star"></i> <span class="nav-text">الجوائز</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('awards', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('awards', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="star"></i> <span class="nav-text" style="flex:1;">الجوائز</span>
             </div>
             <div class="nav-item" onclick="showSection(8)" id="nav-sec-8" data-section="volunteering">
-                <i data-lucide="grip-vertical" class="drag-handle"></i>
-                <i data-lucide="heart-handshake"></i> <span class="nav-text">التطوع</span>
+                <div class="section-order-controls">
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('volunteering', -1)" title="تحريك لأعلى"><i data-lucide="chevron-up"></i></button>
+                    <button type="button" class="btn-sec-order" onclick="event.stopPropagation(); moveSidebarSection('volunteering', 1)" title="تحريك لأسفل"><i data-lucide="chevron-down"></i></button>
+                </div>
+                <i data-lucide="heart-handshake"></i> <span class="nav-text" style="flex:1;">التطوع</span>
             </div>
 
         </nav>
 
         <main class="editor" id="main-editor">
+            <div class="warning-banner" id="warning-banner" style="background-color: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                <i data-lucide="alert-circle" style="color: #d97706; margin-top: 2px;"></i>
+                <div style="flex: 1; font-size: 0.9rem; color: #b45309; font-weight: 500;">
+                    <span style="font-weight:600;">تنبيه:</span> orez لا يرحب بايي اقتراحات او اضافات على الموقع شاكر و مقدر جهودي
+                </div>
+            </div>
             <!-- SECTION 1: Personal -->
             <div class="section-wrapper active" id="sec-1">
-                <div class="elegant-warning">
-                    <div class="warning-icon">
-                        <i data-lucide="alert-circle"></i>
-                    </div>
-                    <div class="warning-content">
-                        <strong>تنبيه:</strong> نعتذر منك، الموقع حالياً <u>لا يدعم اللغة العربية</u> في تصميم السيرة
-                        الذاتية الـ PDF. يُرجى إدخال بياناتك باللغة الإنجليزية فقط للحصول على أفضل نتيجة.
-                    </div>
-                </div>
                 <div class="section-header">
                     <h2>البيانات الشخصية</h2>
                     <p>معلومات الاتصال الأساسية التي تمنح أصحاب العمل وسيلة للوصول إليك بسرعة.</p>
@@ -225,6 +248,49 @@
                         </label>
                         <input type="text" class="form-input" id="in-location" style="direction: ltr;"
                             placeholder="مثال: Makkah, KSA" oninput="saveAndRefresh()">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 3rem; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem;">إعدادات الأيقونات (Icons)</h2>
+                    <p>اختر ما تريد إظهاره من أيقونات في بيانات التواصل.</p>
+                </div>
+                <div class="form-grid" style="margin-bottom: 2rem;">
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-showPhoneIcon" checked onchange="changeIconSetting('showPhoneIcon', this.checked)">
+                            <span>إظهار أيقونة رقم الجوال</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-showEmailIcon" checked onchange="changeIconSetting('showEmailIcon', this.checked)">
+                            <span>إظهار أيقونة البريد الإلكتروني</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-showLinkedinIcon" checked onchange="changeIconSetting('showLinkedinIcon', this.checked)">
+                            <span>إظهار أيقونة لينكد إن</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-showGithubIcon" checked onchange="changeIconSetting('showGithubIcon', this.checked)">
+                            <span>إظهار أيقونة جيتهاب (GitHub)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-showLocationIcon" checked onchange="changeIconSetting('showLocationIcon', this.checked)">
+                            <span>إظهار أيقونة الموقع (الدولة)</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" class="form-label">
+                            <input type="checkbox" id="in-linkedinColorBlue" checked onchange="changeIconSetting('linkedinColorBlue', this.checked)">
+                            <span>استخدام اللون الأزرق الخاص بلينكد إن (حسب القالب)</span>
+                        </label>
                     </div>
                 </div>
 

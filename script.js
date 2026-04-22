@@ -37,24 +37,6 @@ window.onload = () => {
     lucide.createIcons();
     handleSocialInput(resumeData.personal.social || "");
     updateProgressiveForms();
-
-    // Initialize Sortable sidebar
-    const sidebarNav = document.getElementById('sidebar-nav');
-    if (sidebarNav && typeof Sortable !== 'undefined') {
-        new Sortable(sidebarNav, {
-            animation: 150,
-            filter: '.no-drag', // 'الرئيسية' is not draggable
-            ghostClass: 'sortable-ghost',
-            dragClass: 'sortable-drag',
-            onEnd: function() {
-                // Read the DOM order
-                const items = sidebarNav.querySelectorAll('.nav-item[data-section]');
-                const newOrder = Array.from(items).map(el => el.getAttribute('data-section'));
-                resumeData.sectionOrder = newOrder;
-                saveAndRefresh(false);
-            }
-        });
-    }
 };
 
 /* --- NAVIGATION --- */
@@ -433,6 +415,20 @@ function renderAll(buildEdit = true) {
     reorderPreviewSections();
     applyFontSettings();
     detectPageOverflow();
+    
+    // Arabic RTL web support
+    const docRoot = document.querySelector('.cv-document');
+    if (docRoot) {
+        if (hasArabic(resumeData.personal?.name) || hasArabic(resumeData.summary)) {
+            docRoot.style.direction = 'rtl';
+            docRoot.style.textAlign = 'right';
+            docRoot.classList.add('rtl-active');
+        } else {
+            docRoot.style.direction = 'ltr';
+            docRoot.style.textAlign = 'left';
+            docRoot.classList.remove('rtl-active');
+        }
+    }
 }
 
 function detectPageOverflow() {
@@ -440,13 +436,13 @@ function detectPageOverflow() {
     const indicator = document.getElementById('page-break-indicator');
     if (!master || !indicator) return;
 
-    // A4 height is roughly 297mm.
-    const a4HeightPx = 1122; // 297mm * 3.7795 (at 96dpi)
+    // A4 safe limit accounting for padding (top 48px + safe content height).
+    const a4LimitPx = 1074;
     
     // Position the indicator at the break point
-    indicator.style.top = a4HeightPx + "px";
+    indicator.style.top = a4LimitPx + "px";
 
-    if (master.scrollHeight > a4HeightPx + 5) {
+    if (master.scrollHeight > a4LimitPx + 5) {
         indicator.classList.add('visible');
     } else {
         indicator.classList.remove('visible');
@@ -671,52 +667,66 @@ function renderPersonal() {
     // DYNAMIC CONTACT RENDER (based on contactOrder)
     const order = resumeData.settings.contactOrder || ['phone', 'email', 'social', 'github', 'location'];
     const contactHtml = [];
+    const sett = resumeData.settings || {};
     const buildContact = (type) => {
         let text = p[type] || "";
         if(!text) return "";
         let icon = "", linkAttr = "", isSocial = false;
         
+        let showIcon = true;
+        if (type === 'phone' && sett.showPhoneIcon === false) showIcon = false;
+        if (type === 'email' && sett.showEmailIcon === false) showIcon = false;
+        if (type === 'social' && sett.showLinkedinIcon === false) showIcon = false;
+        if (type === 'github' && sett.showGithubIcon === false) showIcon = false;
+        if (type === 'location' && sett.showLocationIcon === false) showIcon = false;
+
         if (type === 'phone') {
-            icon = '<i class="fas fa-phone-alt cv-icon"></i>';
+            icon = showIcon ? '<i class="fas fa-phone-alt cv-icon"></i> ' : '';
         } else if (type === 'email') {
-            icon = '<i class="fas fa-envelope cv-icon"></i>';
+            icon = showIcon ? '<i class="fas fa-envelope cv-icon"></i> ' : '';
         } else if (type === 'location') {
-            icon = '<i class="fas fa-map-marker-alt cv-icon"></i>';
+            icon = showIcon ? '<i class="fas fa-map-marker-alt cv-icon"></i> ' : '';
         } else if (type === 'social') {
             let iconClass = "fas fa-link cv-icon";
             const low = text.toLowerCase();
-            if (low.includes('linkedin')) iconClass = "fa-brands fa-linkedin cv-icon";
+            let isLinkedin = false;
+            if (low.includes('linkedin')) { iconClass = "fa-brands fa-linkedin cv-icon"; isLinkedin = true; }
             else if (low.includes('twitter') || low.includes('x.com')) iconClass = "fa-brands fa-x-twitter cv-icon";
             else if (low.includes('behance')) iconClass = "fa-brands fa-behance cv-icon";
             else if (low.includes('dribbble')) iconClass = "fa-brands fa-dribbble cv-icon";
             
-            icon = `<i class="${iconClass}"></i>`;
+            icon = showIcon ? `<i class="${iconClass}"></i> ` : '';
+            if(isLinkedin && sett.linkedinColorBlue === false) {
+                // remove color class if any, or don't do anything because we don't have .color-linkedin in preview yet, wait the previous code used color-linkedin?
+                // Actually the previous code didn't apply color directly to cv-icon for linkedin except manually or via css! 
+                // Let's add color style manually if blue is true 
+            }
             let href = text.startsWith('http') ? text : 'https://' + text;
-            linkAttr = `href="${href}" target="_blank" style="color: #0a66c2; text-decoration: none;"`;
+            let aColor = (isLinkedin && sett.linkedinColorBlue !== false) ? '#0a66c2' : 'inherit';
+            linkAttr = `href="${href}" target="_blank" style="color: ${aColor}; text-decoration: none;"`;
             
-            const showFull = resumeData.settings?.socialShowFull;
+            const showFull = sett.socialShowFull;
             if (showFull) {
-                // Show full URL as clickable link
                 text = text.replace(/^https?:\/\//, '').replace(/\/$/, '');
             } else {
-                // Extract username/path only
                 text = (text.indexOf('linkedin.com/in/') > -1) ? text.split('linkedin.com/in/')[1].replace(/\/$/, '') : text.replace(/^https?:\/\//, '').replace(/\/$/, '');
             }
             isSocial = true;
         } else if (type === 'github') {
             let iconClass = "fa-brands fa-github cv-icon";
-            icon = `<i class="${iconClass}"></i>`;
+            icon = showIcon ? `<i class="${iconClass}"></i> ` : '';
             let isLink = text.includes('github.com');
             let href = isLink ? (text.startsWith('http') ? text : 'https://' + text) : 'https://github.com/' + text;
-            linkAttr = `href="${href}" target="_blank" style="color: #24292e; text-decoration: none;"`;
+            linkAttr = `href="${href}" target="_blank" style="color: inherit; text-decoration: none;"`;
             text = isLink ? text.replace(/^https?:\/\//, '').replace(/\/$/, '') : text;
             isSocial = true;
         }
 
+        // Apply a small gap text if icon exists
         if (isSocial) {
-             return `<span class="c-item">${icon} <a class="mono" ${linkAttr}>${escapeHTML(text)}</a></span>`;
+             return `<span class="c-item">${icon}<a class="mono" ${linkAttr}>${escapeHTML(text)}</a></span>`;
         } else {
-             return `<span class="c-item">${icon} <span class="mono">${escapeHTML(text)}</span></span>`;
+             return `<span class="c-item">${icon}<span class="mono">${escapeHTML(text)}</span></span>`;
         }
     };
 
@@ -1277,10 +1287,10 @@ function closeResetModal() {
 }
 function confirmReset() {
     const dummyData = {
-        personal: { name: "Sultan Abdullah AlFaifi", highlights: "KAUST AI Program | McKinsey Forward Fellow | SCE Member", phone: "+966 50 399 0106", email: "sultan@example.com", social: "https://www.linkedin.com/in/alfaifi-sultan", location: "Makkah, KSA" },
+        personal: { name: "OREZ", highlights: "KAUST AI Program | McKinsey Forward Fellow | SCE Member", phone: "+966 50 399 0106", email: "orez@example.com", social: "https://www.linkedin.com/in/orez", location: "Makkah, KSA" },
         summary: "A passionate Software Engineer with a focus on building engaging and scalable applications. Experienced in modern web technologies, dedicated to solving complex problems and delivering high-quality solutions.",
         skills: [{ id: 101, category: "Languages", items: "Python\nJavaScript\nTypeScript\nJava" }, { id: 102, category: "Tools", items: "React\nNode.js\nGit\nDocker" }],
-        projects: [{ id: 3, name: "Hajj & Umrah Guide App", date: "Mar. 2021 -- Nov. 2021", link: "https://github.com/sultan/hajj-app", items: "Built a cross-platform mobile application to assist pilgrims.\nIntegrated live maps and offline features for accessibility." }],
+        projects: [{ id: 3, name: "Hajj & Umrah Guide App", date: "Mar. 2021 -- Nov. 2021", link: "https://github.com/orez/hajj-app", items: "Built a cross-platform mobile application to assist pilgrims.\nIntegrated live maps and offline features for accessibility." }],
         experience: [{ id: 1, company: "Tech Solutions Co.", date: "Jan. 2022 -- Present", role: "Software Engineer", location: "Makkah, KSA", items: "Developed scalable web applications serving thousands of users.\nOptimized database queries, reducing load times by 40%." }],
         education: [{ id: 4, school: "Umm Al-Qura University", date: "Aug. 2017 -- May. 2021", degree: "B.S. in Computer Science", location: "Makkah, KSA", items: "**GPA**: 4.8/5.0 with First Class Honors.\n**Coursework**: Data Structures, Web Engineering." }],
         certifications: [{ id: 103, name: "AWS Certified Developer – Associate", date: "Mar. 2022", issuer: "Amazon Web Services", items: "Completed official AWS developer module.\nPassed the exam with a 950/1000 score." }],
@@ -1373,11 +1383,13 @@ function downloadPDF(event) {
             const isBoldDoc = resumeData.settings?.isBold || false;
             
             const selectedFont = resumeData.settings?.fontFamily || 'Inter';
+            
+            const isRTL = hasArabic(resumeData.personal?.name) || hasArabic(resumeData.summary);
 
             const d = {
                 pageSize: 'A4',
                 pageMargins: [35, 35, 35, 35],
-                defaultStyle: { font: selectedFont, color: '#1a1a1a', lineHeight: 1.2, bold: isBoldDoc },
+                defaultStyle: { font: selectedFont, color: '#1a1a1a', lineHeight: 1.2, bold: isBoldDoc, isRightToLeft: isRTL },
                 styles: {
                     name: { font: selectedFont === 'Inter' ? 'InterBlack' : selectedFont, bold: selectedFont !== 'Inter', fontSize: fSizeName, alignment: 'center', margin: [0, 0, 0, resumeData.settings.marginName !== undefined ? resumeData.settings.marginName : -1], color: '#000000', characterSpacing: 0 },
                     contact: { fontSize: fSizeBody - 1, alignment: 'center', color: '#1a1a1a', margin: [0, 0, 0, 6] },
@@ -1432,6 +1444,16 @@ function downloadPDF(event) {
             if (p.highlights) d.content.push({ text: p.highlights, fontSize: 9.5, bold: true, alignment: 'center', margin: [0, -4, 0, 10], color: '#444444' });
 
             const getIconPath = (type) => {
+                let show = true;
+                if (type === 'phone' && resumeData.settings?.showPhoneIcon === false) show = false;
+                if (type === 'email' && resumeData.settings?.showEmailIcon === false) show = false;
+                if (type === 'location' && resumeData.settings?.showLocationIcon === false) show = false;
+                if (type === 'linkedin' && resumeData.settings?.showLinkedinIcon === false) show = false;
+                if (type === 'github' && resumeData.settings?.showGithubIcon === false) show = false;
+                if (type === 'social' && resumeData.settings?.showLinkedinIcon === false) show = false;
+
+                if (!show) return { text: '', width: 0, margin: [0, 0, 0, 0] };
+
                 const attrs = 'fill="#444444" stroke="none"';
                 let path = '';
                 if (type === 'phone') path = '<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>';
@@ -1550,7 +1572,11 @@ function downloadPDF(event) {
                     if (c.url) {
                         txtObj.link = c.url;
                         if (c.isSocial) {
-                            txtObj.color = '#0a66c2';
+                            if (c.icon === 'linkedin' && resumeData.settings.linkedinColorBlue === false) {
+                                txtObj.color = '#1a1a1a';
+                            } else {
+                                txtObj.color = '#0a66c2';
+                            }
                         }
                     }
 
@@ -1860,4 +1886,68 @@ function saveDateSelection() {
 
     updateItem(dpTargetType, dpTargetId, dpTargetKey, finalVal, true);
     closeDatePicker();
+}
+
+// New Functions Added by Assistant
+function moveSidebarSection(secName, dir) {
+    const arr = resumeData.sectionOrder || ['summary', 'skills', 'projects', 'experience', 'education', 'certifications', 'awards', 'volunteering'];
+    const idx = arr.indexOf(secName);
+    if(idx === -1) return;
+    const newIdx = idx + dir;
+    if(newIdx >= 0 && newIdx < arr.length) {
+        [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+        resumeData.sectionOrder = arr;
+        saveProgress();
+        
+        // Reorder DOM sidebar natively
+        const sidebarNav = document.getElementById('sidebar-nav');
+        if(sidebarNav) {
+            resumeData.sectionOrder.forEach(section => {
+                const el = sidebarNav.querySelector(`.nav-item[data-section="${section}"]`);
+                if(el) sidebarNav.appendChild(el);
+            });
+        }
+        reorderPreviewSections();
+    }
+}
+
+function changeIconSetting(key, val) {
+    if(!resumeData.settings) resumeData.settings = {};
+    resumeData.settings[key] = val;
+    saveProgress();
+    renderPersonal();
+}
+
+function toggleDarkMode() {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('cv_dark_mode', 'false');
+        if(document.getElementById('icon-dark-mode')) {
+            document.getElementById('icon-dark-mode').setAttribute('data-lucide', 'moon');
+        }
+    } else {
+        document.body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('cv_dark_mode', 'true');
+        if(document.getElementById('icon-dark-mode')) {
+            document.getElementById('icon-dark-mode').setAttribute('data-lucide', 'sun');
+        }
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+// Init Dark Mode
+document.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('cv_dark_mode') === 'true') {
+        document.body.setAttribute('data-theme', 'dark');
+        if(document.getElementById('icon-dark-mode')) {
+            document.getElementById('icon-dark-mode').setAttribute('data-lucide', 'sun');
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+});
+
+function hasArabic(text) {
+    if (!text) return false;
+    const arabicRegex = /[\u0600-\u06FF]/;
+    return arabicRegex.test(text);
 }
