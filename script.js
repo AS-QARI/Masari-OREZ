@@ -216,6 +216,20 @@ function updateInputFields() {
     if (checkSocialFull && resumeData.settings) {
         checkSocialFull.checked = !!resumeData.settings.socialShowFull;
     }
+
+    // Restore icon/color settings
+    const sett = resumeData.settings || {};
+    const setChecked = (id, checked) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!checked;
+    };
+    setChecked('in-showPhoneIcon', sett.showPhoneIcon !== false);
+    setChecked('in-showEmailIcon', sett.showEmailIcon !== false);
+    setChecked('in-showLinkedinIcon', sett.showLinkedinIcon !== false);
+    setChecked('in-showGithubIcon', sett.showGithubIcon !== false);
+    setChecked('in-showLocationIcon', sett.showLocationIcon !== false);
+    setChecked('in-linkedinColorBlue', sett.linkedinColorBlue !== false);
+    setChecked('in-githubColorBlue', sett.githubColorBlue !== false);
 }
 
 /* Download dropdown toggle */
@@ -717,7 +731,8 @@ function renderPersonal() {
             icon = showIcon ? `<i class="${iconClass}"></i> ` : '';
             let isLink = text.includes('github.com');
             let href = isLink ? (text.startsWith('http') ? text : 'https://' + text) : 'https://github.com/' + text;
-            linkAttr = `href="${href}" target="_blank" style="color: inherit; text-decoration: none;"`;
+            let aColor = (sett.githubColorBlue !== false) ? '#0969da' : 'inherit';
+            linkAttr = `href="${href}" target="_blank" style="color: ${aColor}; text-decoration: none;"`;
             text = isLink ? text.replace(/^https?:\/\//, '').replace(/\/$/, '') : text;
             isSocial = true;
         }
@@ -1573,8 +1588,10 @@ function downloadPDF(event) {
                     if (c.url) {
                         txtObj.link = c.url;
                         if (c.isSocial) {
-                            if (c.icon === 'linkedin' && resumeData.settings.linkedinColorBlue === false) {
-                                txtObj.color = '#1a1a1a';
+                            if (c.icon === 'linkedin') {
+                                txtObj.color = (resumeData.settings.linkedinColorBlue === false) ? '#1a1a1a' : '#0a66c2';
+                            } else if (c.icon === 'github') {
+                                txtObj.color = (resumeData.settings.githubColorBlue === false) ? '#1a1a1a' : '#0969da';
                             } else {
                                 txtObj.color = '#0a66c2';
                             }
