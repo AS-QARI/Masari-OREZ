@@ -1380,6 +1380,7 @@ function downloadPDF(event) {
             const fSizeRole = resumeData.settings?.fontSizeRole || 11;
             const fSizeDate = resumeData.settings?.fontSizeDate || 9.5;
             const fSizeBody = resumeData.settings?.fontSizeBody || 9.5;
+            const fSizeContact = resumeData.settings?.fontSizeContact ?? 9.5;
             const isBoldDoc = resumeData.settings?.isBold || false;
             
             const selectedFont = resumeData.settings?.fontFamily || 'Inter';
@@ -1392,8 +1393,8 @@ function downloadPDF(event) {
                 defaultStyle: { font: selectedFont, color: '#1a1a1a', lineHeight: 1.2, bold: isBoldDoc, isRightToLeft: isRTL },
                 styles: {
                     name: { font: selectedFont === 'Inter' ? 'InterBlack' : selectedFont, bold: selectedFont !== 'Inter', fontSize: fSizeName, alignment: 'center', margin: [0, 0, 0, resumeData.settings.marginName !== undefined ? resumeData.settings.marginName : -1], color: '#000000', characterSpacing: 0 },
-                    contact: { fontSize: fSizeBody - 1, alignment: 'center', color: '#1a1a1a', margin: [0, 0, 0, 6] },
-                    contactLink: { fontSize: fSizeBody - 1, color: '#1a1a1a' },
+                    contact: { fontSize: fSizeContact, alignment: 'center', color: '#1a1a1a', margin: [0, 0, 0, 6] },
+                    contactLink: { fontSize: fSizeContact, color: '#1a1a1a' },
                     sectionTitle: { fontSize: fSizeTitle, bold: true, margin: [0, resumeData.settings.marginTopSection !== undefined ? resumeData.settings.marginTopSection : 6, 0, 2], color: '#000000', characterSpacing: 0.5 },
                     itemTitle: { fontSize: fSizeRole, bold: true, color: '#000000' },
                     itemRow: { margin: [0, 0, 0, 0.5] },
@@ -1478,7 +1479,7 @@ function downloadPDF(event) {
             cOrder.forEach(type => {
                 if (type === 'phone' && p.phone) {
                     allContactsInfo.push({
-                        text: p.phone.trim().replace(/\s+/g, '\u00A0'),
+                        text: p.phone.replace(/ /g, '\u00A0'),
                         rawLength: Math.min(p.phone.length, 25),
                         icon: 'phone',
                         url: 'tel:' + p.phone.replace(/[^0-9+]/g, '')
